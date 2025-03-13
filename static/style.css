@@ -1,0 +1,88 @@
+/* Ensure full-page height */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Main content area (pushes footer down) */
+.container {
+    flex: 1;
+}
+
+/* Default Light Theme */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --nav-bg: #007bff;
+    --nav-text: #ffffff;
+    --footer-bg: #f8f9fa;
+    --footer-text: #333;
+    --btn-bg: #007bff;
+    --btn-text: #ffffff;
+}
+
+/* Dark Theme */
+.dark-theme {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --nav-bg: #1a1a1a;
+    --nav-text: #f8f9fa;
+    --footer-bg: #212529;
+    --footer-text: #f8f9fa;
+    --btn-bg: #343a40;
+    --btn-text: #ffffff;
+}
+
+/* Apply Theme Variables */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--nav-bg) !important;
+}
+
+.navbar a {
+    color: var(--nav-text) !important;
+}
+
+/* Footer */
+footer {
+    background-color: var(--footer-bg);
+    color:black;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+    position: sticky;
+    bottom: 0;
+}
+
+/* Buttons */
+.btn-theme {
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.btn-theme:hover {
+    opacity: 0.8;
+}
+img{
+    width: 300px;
+    height: auto;
+}
+h3{
+    color: #343a40;
+}
+.btn btn-light me-2{
+    background-color: #121212;
+}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Garden Pros{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center">🛍️ Checkout</h1>
+
+    <h4 class="mt-4">Order Summary</h4>
+    <table class="table table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="checkout-items"></tbody>
+    </table>
+
+    <div class="text-end">
+        <h4>Total: <span id="checkout-total" class="fw-bold">$0.00</span></h4>
+    </div>
+
+    <h4 class="mt-4">Billing Details</h4>
+    <form id="checkout-form">
+        <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input type="text" id="fullName" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" id="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="address" class="form-label">Shipping Address</label>
+            <textarea id="address" class="form-control" rows="3" required></textarea>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary" id="place-order-button">Place Order (Details Only)</button>
+            
+            <form action="{{ url_for('create_payment') }}" method="POST" style="display:inline-block">
+                <button type="submit" class="btn btn-success btn-lg">Pay with PayPal</button>
+            </form>            
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        loadCheckoutDetails();
+    });
+
+    function loadCheckoutDetails() {
+        let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+        let cartTable = document.getElementById("checkout-items");
+        let totalPrice = 0;
+        cartTable.innerHTML = "";
+
+        if (cartItems.length === 0) {
+            cartTable.innerHTML = '<tr><td colspan="4" class="text-center">Your cart is empty.</td></tr>';
+        } else {
+            cartItems.forEach((item) => {
+                let row = `<tr>
+                    <td>${item.name}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>${item.quantity}</td>
+                    <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                </tr>`;
+                cartTable.innerHTML += row;
+                totalPrice += item.price * item.quantity;
+            });
+        }
+        document.getElementById("checkout-total").textContent = `$${totalPrice.toFixed(2)}`;
+    }
+
+    document.getElementById("place-order-button").addEventListener("click", function (event) {
+        event.preventDefault();
+
+        let fullName = document.getElementById("fullName").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let address = document.getElementById("address").value.trim();
+
+        if (!fullName || !email || !address) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        alert(`Thank you, ${fullName}! Your order details have been saved.`);
+    });
+</script>
+
+{% endblock %}

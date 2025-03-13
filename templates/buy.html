@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Buy - Garden Pros{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Seeds Section -->
+            <div class="col-md-4 mb-4">
+                <div class="section">
+                    <h2 class="section-title">Seeds</h2>
+                    <a href="{{ url_for('seeds') }}" class="btn btn-primary">Shop Seeds</a>
+                    <img src="/static/3seeds.png" alt="none">
+                </div>
+            </div>
+
+            <!-- Appliances Section -->
+            <div class="col-md-4 mb-4">
+                <div class="section">
+                    <h2 class="section-title">Appliances</h2>
+                    <a href="{{ url_for('appliances') }}" class="btn btn-primary">Shop Appliances</a>
+                    <img src="/static/3tools.png" alt="none">
+                </div>
+            </div>
+
+            <!-- Pots Section -->
+            <div class="col-md-4 mb-4">
+                <div class="section">
+                    <h2 class="section-title">Pots</h2>
+                    <a href="{{ url_for('pots') }}" class="btn btn-primary">Shop Pots</a>
+                    <img src="/static/2pots.png" alt="none">
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+        // Cart update functionality
+        let icart = document.querySelector("#cart-count");
+        let ic = parseInt(localStorage.getItem("cartCount")) || 0;
+
+        // Update the displayed cart count on page load
+        icart.innerText = ic;
+
+        // Function to update the cart count in the UI and localStorage
+        function updateCartCount() {
+            icart.innerText = ic;
+            localStorage.setItem("cartCount", ic);
+        }
+
+        // Add to cart functionality
+        function addedToCart() {
+            ic += 1;  // Increment cart count
+            updateCartCount();  // Update the UI and localStorage
+            alert("Item added to cart");
+        }
+    </script>
+{% endblock %}

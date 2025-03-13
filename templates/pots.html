@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Pots - Garden Pros{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="section-title">Pots</h2>
+
+    <!-- Ceramic Pot 1 -->
+    <div class="card">
+        <img style="width: 500px;" src="/static/Pot 1.png" class="card-img-top" alt="Ceramic Pot 1">
+        <div class="card-body">
+            <h5 class="card-title">Ceramic Pot 1</h5>
+            <p class="card-text">Stylish ceramic pot for your plants.</p>
+            <p class="fw-bold">$12.99</p>
+            <button class="btn btn-primary" onclick="addToCart('Ceramic Pot 1', 12.99)">Add to Cart</button>
+        </div>
+    </div>
+
+    <!-- Ceramic Pot 2 -->
+    <div class="card mt-3">
+        <img style="width: 500px;" src="/static/Pot 2.png" class="card-img-top" alt="Ceramic Pot 2">
+        <div class="card-body">
+            <h5 class="card-title">Ceramic Pot 2</h5>
+            <p class="card-text">Stylish ceramic pot for your plants.</p>
+            <p class="fw-bold">$15.99</p>
+            <button class="btn btn-primary" onclick="addToCart('Ceramic Pot 2', 15.99)">Add to Cart</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function addToCart(name, price) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let itemIndex = cart.findIndex(item => item.name === name);
+
+        if (itemIndex !== -1) {
+            cart[itemIndex].quantity += 1;
+        } else {
+            cart.push({ name: name, price: price, quantity: 1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        showToast("Item added to cart!", "success");
+    }
+
+    function updateCartCount() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cart-count").innerText = totalCount;
+    }
+
+    document.addEventListener("DOMContentLoaded", updateCartCount);
+</script>
+
+{% endblock %}

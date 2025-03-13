@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Account Confirmation{% endblock %}
+
+{% block content %}
+<div class="container text-center my-5">
+    <h1 class="text-success">✅ Account Confirmed</h1>
+    <p class="lead">Your account has been successfully confirmed.</p>
+    <a href="{{ url_for('login') }}" class="btn btn-success btn-lg mt-3">Login Now</a>
+</div>
+{% endblock %}

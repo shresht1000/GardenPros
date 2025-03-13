@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Ebook Download{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Get Your Free Ebook</h1>
+        <p>Enter your email to receive a link to download the ebook.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <p class="{{ category }}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('ebook') }}" method="POST">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Ebook Link</button>
+        </form>
+    </div>
+{% endblock %}
+

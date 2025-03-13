@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - Garden Pros{% endblock %}
+
+{% block content %}
+<div class="text-center my-5">
+    <h1 class="display-4">About Garden Pros</h1>
+    <h4 class="text-muted">Your one-stop shop for all your garden irrigation and tool needs</h4>
+    
+    <section class="mt-5">
+        <h2>Our Mission</h2>
+        <p>At <strong>Garden Pros</strong>, our mission is simple: to make gardening easier, more efficient, and more enjoyable. We understand that a healthy garden requires more than just soil and sunlight—it needs the right tools, the right care, and the right irrigation system. That's why we offer a carefully curated selection of sprinklers, irrigation systems, and high-quality gardening tools designed to help you grow your garden with ease.</p>
+    </section>
+
+    <section class="mt-5">
+        <h2>What We Offer</h2>
+        <ul class="list-unstyled">
+            <li><strong>Sprinklers & Irrigation Systems</strong>: A wide range of sprinklers, drip irrigation kits, timers, and controllers to ensure your plants get the perfect amount of water at the right time.</li>
+            <li><strong>Gardening Tools</strong>: From hand tools like trowels and pruners to larger equipment like shovels, rakes, and hoes, we provide durable and ergonomically designed tools for all your gardening needs.</li>
+            <li><strong>Watering Solutions</strong>: Discover hose reels, watering cans, and automatic watering systems to make sure your plants receive consistent care.</li>
+            <li><strong>Gardening Accessories</strong>: We offer garden accessories including mulch, fertilizers, soil conditioners, plant supports, and much more to help your garden flourish.</li>
+        </ul>
+    </section>
+
+    <section class="mt-5">
+        <h2>Quality You Can Trust</h2>
+        <p>We understand that quality is paramount when it comes to garden tools and irrigation. That's why we source our products from trusted brands that share our commitment to excellence. Each item we offer has been selected for its durability, performance, and value, so you can trust that you're getting the best equipment for your garden.</p>
+    </section>
+
+    <section class="mt-5">
+        <h2>Why Choose Us?</h2>
+        <ul class="list-unstyled">
+            <li><strong>Expert Advice</strong>: Our team is passionate about gardening and ready to help you find the right solutions for your specific needs.</li>
+            <li><strong>Top-Quality Products</strong>: We only offer products that meet high standards of durability and performance, ensuring that your investment lasts season after season.</li>
+            <li><strong>Customer-Centered Service</strong>: We make sure your shopping experience is hassle-free. Our friendly customer support team is always ready to answer your questions.</li>
+            <li><strong>Sustainability</strong>: We believe in the importance of sustainable gardening practices. Many of our products are designed to conserve water, reduce waste, and promote environmentally-friendly gardening.</li>
+        </ul>
+    </section>
+
+    <section class="mt-5">
+        <h2>Our Story</h2>
+        <p>Gardening has always been more than just a hobby for us—it's a passion. What began as a small family-run business has grown into a trusted name in gardening tools and irrigation. Through years of experience, we've gained an in-depth understanding of what gardeners truly need to thrive. Today, we are proud to serve gardening enthusiasts across the country, offering the best tools, products, and advice to help every garden flourish.</p>
+    </section>
+
+    <section class="mt-5">
+        <h2>Connect With Us</h2>
+        <p>We'd love to be a part of your gardening journey! If you have any questions, need expert advice, or simply want to share your gardening successes, reach out to us. You can connect with us through our website, email, or social media platforms. Let’s grow together!</p>
+    </section>
+    
+    <div class="mt-5">
+        <a href="{{ url_for('buy') }}" class="btn btn-primary btn-lg">Shop Now</a>
+    </div>
+</div>
+<style>
+    h4 {
+    color: black !important;
+}
+
+</style>
+{% endblock %}

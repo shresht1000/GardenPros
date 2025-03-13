@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Garden Pros{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <img style="height: 500px;" src="/static/360_sprinkler1.png" alt="360_sprinkler1">
+
+        <div class="dropdown">
+            <button class="dropdown-button" onclick="toggleDropdown()">QNT</button>
+            <ul class="dropdown-menu" id="dropdownMenu">
+                <li style="font-size:20px;" onclick="selectQuantity(1)">1</li>
+                <li style="font-size:20px;" onclick="selectQuantity(2)">2</li>
+                <li style="font-size:20px;" onclick="selectQuantity(3)">3</li>
+            </ul>
+        </div>
+
+        <button class="button" onclick="addedToCart()">Add to Cart</button>
+        <button onclick="Trash()">🗑️</button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Initialize cart count from local storage
+        let icart = document.querySelector("#cart-count");  // Changed to use an ID
+        let ic = parseInt(localStorage.getItem("cartCount")) || 0; 
+
+        // Update the displayed cart count on page load
+        icart.innerText = ic;
+
+        // Toggle dropdown visibility
+        function toggleDropdown() {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Select quantity and update dropdown button text
+        function selectQuantity(quantity) {
+            document.querySelector('.dropdown-button').innerText = `QNT: ${quantity}`;
+            toggleDropdown(); // Hide the dropdown after selection
+        }
+
+        // Simulate adding item to cart and update cart count
+        function addedToCart() {
+            ic = ic + 1; // Increment the cart count
+            icart.innerText = ic; // Update the display
+            localStorage.setItem("cartCount", ic); // Save the updated count to localStorage
+            alert("Item added to cart");
+        }
+
+        // Simulate trash action (remove item from cart and reset count)
+        function Trash() {
+            if (ic > 0) {
+                ic = ic - 1; // Decrement the cart count
+                icart.innerText = ic; // Update the display
+                localStorage.setItem("cartCount", ic); // Save the updated count to localStorage
+                alert("Item removed from cart");
+            } else {
+                alert("No items in the cart to remove");
+            }
+        }
+    </script>
+{% endblock %}

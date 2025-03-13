@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Buy - Garden Pros
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <h2 class="section-title">Seeds</h2>
+
+            <!-- Tomato Seeds -->
+            <div class="card">
+                <img src="/static/Tomato Seeds.png" class="card-img-top" alt="Tomato Seeds">
+                <div class="card-body">
+                    <h5 class="card-title">Tomato Seeds</h5>
+                    <p class="card-text">High-quality tomato seeds for your garden.</p>
+                    <p class="fw-bold">$2.99</p>
+                    <button class="btn btn-primary" onclick="addToCart('Tomato Seeds', 2.99)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Pumpkin Seeds -->
+            <div class="card mt-3">
+                <img src="/static/Pumkin Seeds.png" class="card-img-top" alt="Pumpkin Seeds">
+                <div class="card-body">
+                    <h5 class="card-title">Pumpkin Seeds</h5>
+                    <p class="card-text">High-quality pumpkin seeds for your garden.</p>
+                    <p class="fw-bold">$3.99</p>
+                    <button class="btn btn-primary" onclick="addToCart('Pumpkin Seeds', 3.99)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Sunflower Seeds -->
+            <div class="card mt-3">
+                <img src="/static/Sunflower Seeds.png" class="card-img-top" alt="Sunflower Seeds">
+                <div class="card-body">
+                    <h5 class="card-title">Sunflower Seeds</h5>
+                    <p class="card-text">Bright and cheerful sunflower seeds for your garden.</p>
+                    <p class="fw-bold">$4.99</p>
+                    <button class="btn btn-primary" onclick="addToCart('Sunflower Seeds', 4.99)">Add to Cart</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Cart Functionality -->
+<script>
+    function addToCart(name, price) {
+        fetch('/add_to_cart', {
+            method: 'POST',
+            body: JSON.stringify({ name: name, price: price }),
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            showToast("Item added to cart!", "success");
+
+
+            updateCartCount();
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function updateCartCount() {
+        fetch('/cart_count')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("cartCount").innerText = data.count;
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", updateCartCount);
+</script>
+
+{% endblock %}
