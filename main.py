@@ -1,5 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from flask import *
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import sqlite3
 import smtplib
 import ssl
@@ -8,7 +7,6 @@ import os
 import paypalrestsdk
 import bcrypt
 import uuid  
-import secrets
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -17,9 +15,17 @@ DB_FILE = "users.db"
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
-SENDER_EMAIL = "shreshtmit09@gmail.com"
-SENDER_PASSWORD = "krun zgdz tmuj cngd"  # Use environment variables for better security!
+SENDER_EMAIL = "your-email@gmail.com"
+SENDER_PASSWORD = "your-email-password"
 
+# PayPal Configuration (LIVE MODE)
+paypalrestsdk.configure({
+    "mode": "live",  # Live mode for real transactions
+    "client_id": "YOUR_LIVE_PAYPAL_CLIENT_ID",
+    "client_secret": "YOUR_LIVE_PAYPAL_CLIENT_SECRET"
+})
+
+# Database Setup
 if not os.path.exists(DB_FILE):
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
@@ -35,27 +41,21 @@ if not os.path.exists(DB_FILE):
     conn.commit()
     conn.close()
 
-paypalrestsdk.configure({
-    "mode": "sandbox",
-    "client_id": os.environ.get("PAYPAL_CLIENT_ID"),
-    "client_secret": os.environ.get("PAYPAL_CLIENT_SECRET"),
-})
-
+# Email Confirmation Function
 def send_confirmation_email(email, token):
-    """ Sends a confirmation email with a unique token. """
     msg = EmailMessage()
     msg["Subject"] = "Confirm Your Account"
     msg["From"] = SENDER_EMAIL
     msg["To"] = email
-
     confirmation_link = f"http://127.0.0.1:5000/confirm/{token}"
-    msg.set_content(f"Click the link below to confirm your account:\n\n{confirmation_link} you can also copy and paste the link in your browser and here is our ebook link https://docs.google.com/document/d/14z05oDhZL-OeCnd6rcBTWfuQiMzMCYWBJWwK0MmbnUg/edit?usp=sharing")
+    msg.set_content(f"Click the link below to confirm your account:\n\n{confirmation_link}")
 
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT, context=context) as server:
         server.login(SENDER_EMAIL, SENDER_PASSWORD)
         server.send_message(msg)
 
+# Routes
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -140,36 +140,52 @@ def logout():
 @app.route("/cart")
 def cart():
     return render_template("cart.html")
-
-@app.route("/checkout")
+@app.route("/checkout", methods=["POST","GET"])
 def checkout():
-    return render_template("checkout.html")
+    if request.method == "GET":
+        return render_template("checkout.html")  # Render checkout page
 
-@app.route("/create_payment", methods=["POST"])
-def create_payment():
-    cart_items = session.get("cart", [])
-    total = sum(item["price"] * item["quantity"] for item in cart_items)
+    try:
+        cart_items = session.get("cart", [])
+        donation = float(request.form.get("donation", 0))  # Get donation amount (default 0)
+        
+        if not cart_items:
+            flash("Your cart is empty!", "danger")
+            return redirect(url_for("cart"))
 
-    payment = paypalrestsdk.Payment({
-        "intent": "sale",
-        "payer": {"payment_method": "paypal"},
-        "transactions": [{
-            "amount": {"total": f"{total:.2f}", "currency": "USD"},
-            "description": "Garden Pros Purchase"
-        }],
-        "redirect_urls": {
-            "return_url": url_for('execute_payment', _external=True),
-            "cancel_url": url_for('payment_canceled', _external=True)
-        }
-    })
+        total_amount = sum(item["price"] * item["quantity"] for item in cart_items) + donation
+        
+        # Create PayPal Payment
+        payment = paypalrestsdk.Payment({
+            "intent": "sale",
+            "payer": {"payment_method": "paypal"},
+            "redirect_urls": {
+                "return_url": url_for("payment_success", _external=True),
+                "cancel_url": url_for("payment_canceled", _external=True),
+            },
+            "transactions": [{
+                "item_list": {"items": [
+                    {"name": item["name"], "price": f"{item['price']:.2f}", "currency": "USD", "quantity": item["quantity"]}
+                    for item in cart_items
+                ] + ([{"name": "Donation", "price": f"{donation:.2f}", "currency": "USD", "quantity": 1}] if donation > 0 else [])},
+                "amount": {"total": f"{total_amount:.2f}", "currency": "USD"},
+                "description": "Garden Pros Purchase",
+            }]
+        })
 
-    if payment.create():
-        for link in payment.links:
-            if link.rel == "approval_url":
-                return redirect(str(link.href))
-    else:
-        flash("Error creating PayPal payment.", "danger")
-        return redirect(url_for("checkout"))
+        if payment.create():
+            for link in payment.links:
+                if link.rel == "approval_url":
+                    return redirect(link.href)
+        else:
+            flash("Payment failed. Try again!", "danger")
+            return redirect(url_for("cart"))
+
+    except Exception as e:
+        print("Error in checkout:", str(e))
+        flash("Something went wrong. Please try again.", "danger")
+        return redirect(url_for("cart"))
+
 
 @app.route('/execute_payment', methods=['GET'])
 def execute_payment():
@@ -202,33 +218,26 @@ def add_to_cart():
         if not name or not price:
             return jsonify({"error": "Missing name or price"}), 400
 
-        # Example: Save to session or database (modify this as needed)
         session.setdefault("cart", []).append({"name": name, "price": price, "quantity": 1})
         session.modified = True
 
         return jsonify({"message": f"{name} added to cart", "cart": session["cart"]}), 200
 
     except Exception as e:
-        print("Error in /add_to_cart:", str(e))  # Log error in console
+        print("Error in /add_to_cart:", str(e))
         return jsonify({"error": "Something went wrong"}), 500
-
-
-@app.route("/seeds")
-def seeds():
-    return render_template("seeds.html")
+    
+@app.route("/pots")
+def pots():
+    return render_template("pots.html")
 
 @app.route("/appliances")
 def appliances():
     return render_template("appliances.html")
 
-@app.route("/pots")
-def pots():
-    return render_template("pots.html")
-
-@app.route("/prodect")
-def garden_sprinkler():
-    return render_template("360_garden_sprinkler.html")
-
+@app.route("/seeds")
+def seeds():
+    return render_template("seeds.html")
 @app.route("/ebook", methods=["GET", "POST"])
 def ebook():
     if request.method == "POST":
@@ -247,8 +256,8 @@ def ebook():
         msg["Subject"] = "Your Free eBook Link"
         msg["From"] = SENDER_EMAIL
         msg["To"] = email
-        confirmation_link = f"http://127.0.0.1:5000/confirm/{token}"
-        msg.set_content(f"Click the link below to confirm your account and access your eBook: https://docs.google.com/document/d/14z05oDhZL-OeCnd6rcBTWfuQiMzMCYWBJWwK0MmbnUg/edit?usp=sharing")
+        msg.set_content("Click the link below to download your eBook:\n\n"
+                        "https://docs.google.com/document/d/14z05oDhZL-OeCnd6rcBTWfuQiMzMCYWBJWwK0MmbnUg/edit?usp=sharing")
 
         # Send the email
         context = ssl.create_default_context()
@@ -256,25 +265,14 @@ def ebook():
             with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT, context=context) as server:
                 server.login(SENDER_EMAIL, SENDER_PASSWORD)
                 server.send_message(msg)
-            flash("Check your email for the eBook confirmation link.", "success")
+            flash("Check your email for the eBook download link.", "success")
         except Exception as e:
             flash(f"Failed to send email: {str(e)}", "danger")
 
         return redirect(url_for("index"))
 
     return render_template("ebook.html")
-def send_confirmation_email(email, token):
-    msg = EmailMessage()
-    msg["Subject"] = "Confirm Your Account"
-    msg["From"] = SENDER_EMAIL
-    msg["To"] = email
-    confirmation_link = f"http://127.0.0.1:5000/confirm/{token}"
-    msg.set_content(f"Click the link below to confirm your account:\n\n{confirmation_link}")
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT, context=context) as server:
-        server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        server.send_message(msg)
 
 
 if __name__ == "__main__":

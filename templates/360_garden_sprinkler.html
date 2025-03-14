@@ -46,7 +46,7 @@
             ic = ic + 1; // Increment the cart count
             icart.innerText = ic; // Update the display
             localStorage.setItem("cartCount", ic); // Save the updated count to localStorage
-            alert("Item added to cart");
+            showToast("Item added to cart!", "success");
         }
 
         // Simulate trash action (remove item from cart and reset count)

@@ -21,6 +21,8 @@
         </table>
 
         <div class="text-end">
+            <h4>Subtotal: <span id="cart-subtotal" class="fw-bold">$0.00</span></h4>
+            <h4>Tax: <span id="cart-tax" class="fw-bold">$0.00</span></h4>
             <h4>Total: <span id="cart-total" class="fw-bold">$0.00</span></h4>
         </div>
 
@@ -37,28 +39,36 @@
         function updateCart() {
             let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
             let cartTable = document.getElementById("cart-items");
-            let totalPrice = 0;
+            let subtotal = 0;
+            const taxRate = 0.08; // 8% tax rate (adjust as needed)
             cartTable.innerHTML = "";
 
             if (cartItems.length === 0) {
                 cartTable.innerHTML = '<tr><td colspan="5" class="text-center">Your cart is empty.</td></tr>';
             } else {
                 cartItems.forEach((item, index) => {
+                    let itemTotal = item.price * item.quantity;
                     let row = `<tr>
                         <td>${item.name}</td>
                         <td>$${item.price.toFixed(2)}</td>
                         <td>
                             <input type="number" value="${item.quantity}" min="1" class="form-control"
-                                   onchange="updateQuantity(${index}, this.value),updateCartCount()">
+                                   onchange="updateQuantity(${index}, this.value)">
                         </td>
-                        <td>$${(item.price * item.quantity).toFixed(2)}</td>
-                        <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index}),updateCartCount()">Remove</button></td>
+                        <td>$${itemTotal.toFixed(2)}</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">Remove</button></td>
                     </tr>`;
                     cartTable.innerHTML += row;
-                    totalPrice += item.price * item.quantity;
+                    subtotal += itemTotal;
                 });
             }
-            document.getElementById("cart-total").textContent = `$${totalPrice.toFixed(2)}`;
+
+            let tax = subtotal * taxRate;
+            let total = subtotal + tax;
+
+            document.getElementById("cart-subtotal").textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById("cart-tax").textContent = `$${tax.toFixed(2)}`;
+            document.getElementById("cart-total").textContent = `$${total.toFixed(2)}`;
         }
 
         function updateQuantity(index, quantity) {

@@ -61,22 +61,3 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize cart UI on page load
     updateCartUI();
 });
- // Cart update functionality
- let icart = document.querySelector("#cart-count");
- let ic = parseInt(localStorage.getItem("cartCount")) || 0;
-
- // Update the displayed cart count on page load
- icart.innerText = ic;
-
- // Function to update the cart count in the UI and localStorage
- function updateCartCount() {
-     icart.innerText = ic;
-     localStorage.setItem("cartCount", ic);
- }
-
- // Add to cart functionality
- function addedToCart() {
-     ic += 1;  // Increment cart count
-     updateCartCount();  // Update the UI and localStorage
-     alert("Item added to cart");
- }

@@ -1,27 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Ebook Download{% endblock %}
+{% block title %}Free eBook - Garden Pros{% endblock %}
 
 {% block content %}
-    <div class="container mt-4">
-        <h1>Get Your Free Ebook</h1>
-        <p>Enter your email to receive a link to download the ebook.</p>
+<div class="container my-5">
+    <h1 class="text-center">📖 Get Your Free eBook!</h1>
+    <p class="text-center">Enter your email to receive our exclusive gardening eBook.</p>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <p class="{{ category }}">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form action="{{ url_for('ebook') }}" method="POST">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email Address</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Send Ebook Link</button>
-        </form>
-    </div>
+    <form method="POST" action="{{ url_for('ebook') }}" class="text-center">
+        <input type="email" name="email" class="form-control my-3" placeholder="Enter your email" required>
+        <button type="submit" class="btn btn-primary">Get eBook</button>
+    </form>
+</div>
 {% endblock %}
-
