@@ -6,7 +6,8 @@ from email.message import EmailMessage
 import os
 import paypalrestsdk
 import bcrypt
-import uuid  
+import uuid
+import secrets  
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -15,8 +16,8 @@ DB_FILE = "users.db"
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465
-SENDER_EMAIL = "your-email@gmail.com"
-SENDER_PASSWORD = "your-email-password"
+SENDER_EMAIL = "shreshtmit09@gmail.com"
+SENDER_PASSWORD = "krun zgdz tmuj cngd"
 
 # PayPal Configuration (LIVE MODE)
 paypalrestsdk.configure({
@@ -276,4 +277,4 @@ def ebook():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)

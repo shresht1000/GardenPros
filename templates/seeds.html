@@ -24,7 +24,7 @@
 
             <!-- Pumpkin Seeds -->
             <div class="card mt-3">
-                <img src="/static/Pumkin Seeds.png" class="card-img-top" alt="Pumpkin Seeds">
+                <img src="/static/Pumkin seeds.png" class="card-img-top" alt="Pumpkin Seeds">
                 <div class="card-body">
                     <h5 class="card-title">Pumpkin Seeds</h5>
                     <p class="card-text">High-quality pumpkin seeds for your garden.</p>
@@ -49,32 +49,31 @@
 </div>
 
 <!-- JavaScript for Cart Functionality -->
+
 <script>
     function addToCart(name, price) {
-        fetch('/add_to_cart', {
-            method: 'POST',
-            body: JSON.stringify({ name: name, price: price }),
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => response.json())
-        .then(data => {
-            showToast("Item added to cart!", "success");
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let itemIndex = cart.findIndex(item => item.name === name);
 
+        if (itemIndex !== -1) {
+            cart[itemIndex].quantity += 1;
+        } else {
+            cart.push({ name: name, price: price, quantity: 1 });
+        }
 
-            updateCartCount();
-        })
-        .catch(error => console.error('Error:', error));
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        showToast("Item added to cart!", "success");
     }
 
     function updateCartCount() {
-        fetch('/cart_count')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("cartCount").innerText = data.count;
-        });
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cart-count").innerText = totalCount;
     }
 
     document.addEventListener("DOMContentLoaded", updateCartCount);
 </script>
+
 
 {% endblock %}
