@@ -48,7 +48,7 @@ def send_confirmation_email(email, token):
     msg["Subject"] = "Confirm Your Account"
     msg["From"] = SENDER_EMAIL
     msg["To"] = email
-    confirmation_link = f"http://127.0.0.1:5000/confirm/{token}"
+    confirmation_link = f"http://gardepros.onrender.com/confirm/{token}"
     msg.set_content(f"Click the link below to confirm your account:\n\n{confirmation_link}")
 
     context = ssl.create_default_context()
@@ -274,7 +274,55 @@ def ebook():
 
     return render_template("ebook.html")
 
+# Password Recovery Routes
+@app.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form["email"]
 
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+
+        if user:
+            reset_token = str(uuid.uuid4())
+            cursor.execute("UPDATE users SET reset_token = ? WHERE email = ?", (reset_token, email))
+            conn.commit()
+            reset_link = f"http://127.0.0.1:5000/reset_password/{reset_token}"
+            send_email(email, "Reset Your Password", f"Click here to reset your password: {reset_link}")
+            flash("Password reset link sent! Check your email.", "info")
+        else:
+            flash("Email not found!", "danger")
+
+        conn.close()
+        return redirect(url_for("forgot_password"))
+
+    return render_template("forgot_password.html")
+
+
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    if request.method == "POST":
+        new_password = request.form["password"]
+        hashed_password = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt())
+
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users WHERE reset_token = ?", (token,))
+        user = cursor.fetchone()
+
+        if user:
+            cursor.execute("UPDATE users SET password = ?, reset_token = NULL WHERE id = ?", (hashed_password, user[0]))
+            conn.commit()
+            flash("Password reset successful! You can now log in.", "success")
+            return redirect(url_for("login"))
+        else:
+            flash("Invalid or expired reset link.", "danger")
+
+        conn.close()
+
+    return render_template("reset_password.html")
 
 if __name__ == "__main__":
     app.run(debug=False)
