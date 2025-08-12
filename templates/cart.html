@@ -22,7 +22,6 @@
 
         <div class="text-end">
             <h4>Subtotal: <span id="cart-subtotal" class="fw-bold">$0.00</span></h4>
-            <h4>Tax: <span id="cart-tax" class="fw-bold">$0.00</span></h4>
             <h4>Total: <span id="cart-total" class="fw-bold">$0.00</span></h4>
         </div>
 
@@ -63,11 +62,10 @@
                 });
             }
 
-            let tax = subtotal * taxRate;
+            
             let total = subtotal + tax;
 
             document.getElementById("cart-subtotal").textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById("cart-tax").textContent = `$${tax.toFixed(2)}`;
             document.getElementById("cart-total").textContent = `$${total.toFixed(2)}`;
         }
 
